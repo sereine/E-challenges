@@ -3,6 +3,8 @@ package com.model;
 import java.util.HashSet;
 import java.util.Set;
 
+import org.springframework.stereotype.Component;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.FetchType;
@@ -21,6 +23,7 @@ import com.validator.RefUnique;
 
 @Entity
 @Table(name="PROFESSEUR")
+@Component
 public class Professeur extends Challenger {
 	
 	
@@ -49,8 +52,10 @@ public class Professeur extends Challenger {
 		this.reference = reference;
 	}
 
-	
-	
+    public void print()
+    {
+    	System.out.println("aze");
+    }
 	
 	
 }

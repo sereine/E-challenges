@@ -1,5 +1,8 @@
 package com.model;
 
+import java.util.HashSet;
+import java.util.Set;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.GeneratedValue;
@@ -8,6 +11,7 @@ import javax.persistence.Id;
 import javax.persistence.Inheritance;
 import javax.persistence.InheritanceType;
 import javax.persistence.JoinColumn;
+import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.Table;
 import javax.validation.Valid;
@@ -55,6 +59,11 @@ public class Challenger{
 	@Pattern(message="format de tel est incorecte" , regexp="^((06)|(05))([0-9]){8}$")
 	@Column(name="TEL", nullable=false)
 	private String tel;
+	
+	
+	@OneToMany
+	@JoinColumn(name = "challenger_id")
+	private Set<Solution> solutions = new HashSet<Solution>();
 
 	public String getFirstName() {
 		return firstName;
@@ -104,6 +113,16 @@ public class Challenger{
 
 	public void setId(int id) {
 		this.id = id;
+	}
+
+	
+	
+	public Set<Solution> getSolutions() {
+		return solutions;
+	}
+
+	public void setSolutions(Set<Solution> solutions) {
+		this.solutions = solutions;
 	}
 
 	@Override

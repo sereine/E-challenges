@@ -35,12 +35,6 @@ public class LangageServiceImpl implements LangageService {
 	public List<Langage> allLanguages() {
 		return languageDao.allLanguages();
 	}
-	
-	@Override
-	public Langage findByName(String nom)
-	{
-	  return languageDao.findByName(nom);
-	}
      
 	
 	

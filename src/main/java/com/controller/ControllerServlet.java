@@ -6,13 +6,11 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.io.IOException;
 import java.util.Calendar;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
 import java.util.Set;
 
-import javax.servlet.ServletRequest;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.validation.Valid;
@@ -56,24 +54,21 @@ import com.model.Probleme;
 import com.model.Professeur;
 import com.model.UserProfile;
 import com.service.ChallengeService;
-import com.service.ChallengeTestService;
-import com.service.ChallengesService;
 import com.service.CompteService;
 import com.service.DeveloppeurService;
 import com.service.EtudiantService;
-import com.service.ProblemeService;
 import com.service.ProfesseurService;
 import com.service.ProfesseurServiceImpl;
 import com.service.UserProfileService;
+import com.service.challenge.ChallengeTestService;
+import com.service.challenge.ChallengesService;
+import com.service.challenge.ProblemeService;
 import com.service.entreprise.EntrepriseService;
 import com.service.etab.EtabService;
 import com.service.etab.EtabServiceImpl;
 import com.service.language.LangageService;
-import com.service.language.LangageServiceImpl;
 import com.util.ReadDataStudentsXML;
 import com.validator.FileValidator;
-
-import org.springframework.web.bind.annotation.ModelAttribute;
 
 @Controller
 public class ControllerServlet {
@@ -90,6 +85,10 @@ public class ControllerServlet {
        binder.setValidator(fileValidator);
     }
 	
+   
+    @Autowired
+    Professeur prof;
+    
     @Autowired
     EtabService etabService;
 	@Autowired
@@ -98,9 +97,6 @@ public class ControllerServlet {
 	CompteService compteService;
 	@Autowired
 	ChallengeService challengerService;
-	@Autowired
-	ChallengesService challengesService;
-	
 	@Autowired
 	DeveloppeurService developpeurService;
 	@Autowired
@@ -112,11 +108,15 @@ public class ControllerServlet {
 	@Autowired
 	LangageService languageService;
 	
+	
 	@Autowired
 	ProblemeService problemeService;
 	
 	@Autowired
 	ChallengeTestService challengeTestService;
+	
+	@Autowired
+	ChallengesService challengeService;
 	
 	@RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
 	public String homePage(ModelMap model) {
@@ -170,43 +170,6 @@ public class ControllerServlet {
 		model.addAttribute("developpeur", developeur);
 		return "InscriptionDevloppeur";
 	}
-	
-	
-	@RequestMapping(value = "/AddChallenge", method = RequestMethod.GET)
-	public String addchallenges(ModelMap model) {
-		
-		
-	    	   
-	   String role = getRole();
-		        
-	   if(role == null) 
-		       return "redirect:/home";
-		        	        
-	   if( role.compareTo("Entreprise") != 0 )
-		        return "redirect:/login";
-		        	        
-		
-		
-		
-		ChallengeTest challengetest = new ChallengeTest();
-		
-		model.addAttribute("challengetest", challengetest);
-		List<Langage> langage=languageService.allLanguages();
-		
-		model.addAttribute("langage", langage);
-		
-		return "AddChallenge";
-	}
-	
-	
-
-	
-	@RequestMapping(value = "/AddProbleme", method = RequestMethod.POST)
-	public String addProbleme(ModelMap model) {
-		Probleme probleme = new Probleme();
-		model.addAttribute("probleme", probleme);
-		return "AddProbleme";
-	}
 
 	
 	@RequestMapping(value = "/InscriptionDeveloppeur", method = RequestMethod.POST)
@@ -224,43 +187,14 @@ public class ControllerServlet {
 	}
 	
 	
-	@RequestMapping(value = "/AddChallenge", method = RequestMethod.POST)
-	public String saveRegistrationChallenge(@Valid ChallengeTest challengetest,
-			BindingResult result, ModelMap model, @RequestParam String type) {
-		
-		//challengetest.setLangage(languageService.findById(challengetest.getLangage().getId()));
-		//System.out.println(challengetest.getLangage().getNomLangage() + challengetest.getLangage().getCleeLangage());
-		if (result.hasErrors()) {
-			System.out.println(challengetest.getTitre());
-			System.out.println(result.toString());
-			return "AddChallenge";
-		}
-		java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
-		challengetest.setDate_creation(date);
-		if(date.after(challengetest.getDate_echeance()))
-		{
-			return "redirect:/login";
-		}
-		
-		else
-		{
-	    
-        challengetest.setType(type);
-        //challengetest.getLangage().setCleeLangage(11);
-        
-		challengeTestService.save(challengetest);
-		return "redirect:/home";
-		}
-	}
-	
-	
 	
 	@RequestMapping(value = "/InscriptionProfesseur", method = RequestMethod.GET)
 	public String inscriptionProfesseur(ModelMap model) {
 		
+		System.out.println(prof.getEmail());
 		
-		Professeur professeur = new Professeur();
-		model.addAttribute("professeur", professeur);
+		//Professeur professeur = new Professeur();
+		model.addAttribute("professeur", prof);
 		return "InscriptionProfesseur";
 	}
 
@@ -288,29 +222,6 @@ public class ControllerServlet {
 	
 	
 	
-	@InitBinder
-	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
-	    
-		
-		binder.registerCustomEditor(Etablissement.class, "etabs", new PropertyEditorSupport() {
-	    @Override
-	    public void setAsText(String text) {
-	        Etablissement etab = etabService.findById(Integer.parseInt(text));
-	        setValue(etab);
-	    }
-	    });
-	    
-		binder.registerCustomEditor(Langage.class, "langage", new PropertyEditorSupport() {
-		    @Override
-		    public void setAsText(String text) {
-		        Langage langage = languageService.findById(Integer.parseInt(text));
-		        setValue(langage);
-		    }
-		    });
-	    
-	    
-	}
-	
 	
 	//   Add Students 
 	
@@ -331,6 +242,8 @@ public class ControllerServlet {
 	        
 	        
 	        List<Etablissement> etabs = etabService.allEtab();
+	        
+	      
 	        
 	        model.addAttribute("etabs", etabs);
 	        
@@ -473,8 +386,74 @@ public class ControllerServlet {
 	}
    
    
+	
+   //    ADD CHALLENGE
    
-   
+	
+	@RequestMapping(value = "/AddChallenge", method = RequestMethod.GET)
+	public String addchallenges(ModelMap model) {
+		
+		
+	    	   
+	   String role = getRole();
+		        
+	   if(role == null) 
+		       return "redirect:/home";
+		       
+	   
+	   if( role.compareTo("Entreprise") != 0 )
+		        return "redirect:/login";
+		        	        
+		
+		
+		
+		ChallengeTest challengetest = new ChallengeTest();
+		
+		model.addAttribute("challengetest", challengetest);
+		List<Langage> langage=languageService.allLanguages();
+		
+		model.addAttribute("langage", langage);
+		
+		return "AddChallenge";
+	}
+    
+	
+	@RequestMapping(value = "/AddChallenge", method = RequestMethod.POST)
+	public String saveRegistrationChallenge(@Valid ChallengeTest challengetest,
+			BindingResult result, ModelMap model, @RequestParam String type) {
+		
+		if (result.hasErrors()) {
+			System.out.println(challengetest.getTitre());
+			System.out.println(result.toString());
+			return "AddChallenge";
+		}
+		java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+		challengetest.setDate_creation(date);
+		if(date.after(challengetest.getDate_echeance()))
+		{
+			return "redirect:/login";
+		}
+		
+		else
+		{
+	    
+        challengetest.setType(type);
+        
+		challengeTestService.save(challengetest);
+		return "redirect:/home";
+		}
+	}
+	
+	
+	
+	
+    
+	@RequestMapping(value = "/AddProbleme", method = RequestMethod.POST)
+	public String addProbleme(ModelMap model) {
+		Probleme probleme = new Probleme();
+		model.addAttribute("probleme", probleme);
+		return "AddProbleme";
+	}
    
    
 	    
@@ -512,7 +491,7 @@ public class ControllerServlet {
 		{
 		if(challenger instanceof Developpeur)
 		{
-			return "Developpeur";
+			return "Developpeur"; 
 		}
 		else if(challenger instanceof Professeur)
 		{
@@ -605,9 +584,167 @@ public class ControllerServlet {
 	}
 	
 	
+	@InitBinder
+	protected void initBinder(HttpServletRequest request, ServletRequestDataBinder binder) throws Exception {
+	    binder.registerCustomEditor(Etablissement.class, "etabs", new PropertyEditorSupport() {
+	    @Override
+	    public void setAsText(String text) {
+	        Etablissement etab = etabService.findById(Integer.parseInt(text));
+	        setValue(etab);
+	    }
+	    });
+	    
+	    binder.registerCustomEditor(Langage.class, "langage", new PropertyEditorSupport() {
+		    @Override
+		    public void setAsText(String text) {
+		        Langage langage = languageService.findById(Integer.parseInt(text));
+		        setValue(langage);
+		    }
+		    });
+	    
+	    
+	}
+	
+	// Effectuer challenge 
+	
+	@RequestMapping(value = "/effectuerchallenge", method = RequestMethod.GET)
+	public String effectuerEhallenge(ModelMap model,@RequestParam(value="challenge_id",required=false) String challenge_id) {
+		
+		
+		if(challenge_id == null)
+			return "redirect:/home";
+		
+		
+		String role =   getRole();
+	    
+		   
+	    if(role == null)
+		  return   "redirect:/home";
+		   
+	    
+	    
+		if(role.compareTo("Developpeur") != 0 && role.compareTo("Professeur") != 0
+				&& role.compareTo("Etudiant") != 0 )
+			return   "redirect:/home";
+		   
+		
+		 Integer id = null;
+		
+		try
+		{
+		    id = Integer.parseInt(challenge_id);
+		}
+		catch(Exception e)
+		{
+			return "redirect:/home";
+		}
+		
+		Challenge challenge =  challengeService.findById(id);
+		
+		if(challenge == null )
+			return "redirect:/home";
+		
+		Langage langage = challenge.getLangage();
+
+		if(challenge == null)
+			return "redirect:/home";
+		
+		
+		model.addAttribute("language",langage.getNomLangage());
+		model.addAttribute("titre",challenge.getTitre());
+		model.addAttribute("id_challenge",challenge.getId());
+		
+		return "effectuerchallenge";
+	}
 	
 	
-	// AJAX
+	//  response Compiler  Test  ( effectuer challenge )
+	
+	
+	@RequestMapping(value = "/responseCompilerTest", method = RequestMethod.GET)
+	public @ResponseBody HashMap<String, String> responseCompilerTest(
+			@RequestParam("code") String code,
+			@RequestParam("id_challenge") String challenge_id){
+            
+
+			if(challenge_id == null)
+				return null;
+			
+			 Integer id = null;
+			
+			try
+			{
+			    id = Integer.parseInt(challenge_id);
+			}
+			catch(Exception e)
+			{
+				return null;
+			}
+			
+			Challenge challenge =  challengeService.findById(id);
+			
+			Langage langage = challenge.getLangage();
+			
+			if(challenge == null)
+				return null;
+			
+	        
+
+	        HashMap<String,String> res = new HashMap<String,String>();
+	       
+	       
+	        res = IDE.runProgramme(code, challenge.getInput(), langage.getCleeLangage(),true);
+	        
+	        String output = challenge.getOutput();
+	        
+	        String[] outputS = output.split("\\r?\\n");
+	        String[] resS = res.get("output").split("\n");
+	        
+	        int nbrOuput = outputS.length;
+	        
+	        int nbrRes = resS.length;
+	        
+	        if( nbrOuput!=  nbrRes)
+	        {
+	        	res.put("res", "false");
+	        	res.remove("input");
+	        	res.remove("output");
+	        	return res;
+	        }
+	        
+	        int i = nbrOuput;
+	        
+	        while(i > 1)
+	        {
+	        	i--;
+	        	if(outputS[i].compareTo(resS[i]) != 0)
+	        	{
+	        		res.put("res", "false");
+	        		res.remove("input");
+		        	res.remove("output");
+		        	return res;
+	        	}
+	        }
+	       
+	        res.put("res", "true");
+	        
+	        System.out.println(res);
+	         
+	        res.remove("input");
+        	res.remove("output");
+	        return res;
+	       
+	}
+	
+	
+	
+	
+	
+	
+	
+	
+	
+	// COMPILER ONLINE
 	
 	
 	@RequestMapping(value = "/compiler", method = RequestMethod.GET)
@@ -633,7 +770,7 @@ public class ControllerServlet {
 		        	return "Non valide langage.";
 		        
 
-		        HashMap<String,String> res = IDE.runProgramme(code, input, langage.getCleeLangage());
+		        HashMap<String,String> res = IDE.runProgramme(code, input, langage.getCleeLangage(),true);
 		        
 		         System.out.println(res);
 		        

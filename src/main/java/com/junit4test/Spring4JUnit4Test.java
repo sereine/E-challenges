@@ -35,6 +35,7 @@ import com.compilers.IDE;
 import com.dao.CompteDaoImpl;
 import com.dao.UserDao;
 import com.dao.challenges.ChallengerDao;
+import com.model.Challenge;
 import com.model.Challenger;
 import com.model.Compte;
 import com.model.Entreprise;
@@ -46,6 +47,7 @@ import com.service.CompteService;
 import com.service.CompteServiceImpl;
 import com.service.EtudiantService;
 import com.service.ProfesseurService;
+import com.service.challenge.ChallengesService;
 import com.service.entreprise.EntrepriseService;
 import com.service.etab.EtabService;
 import com.service.language.LangageService;
@@ -89,9 +91,15 @@ public class Spring4JUnit4Test {
   @Autowired
   LangageService languageService;
   
+  
+  @Autowired
+  ChallengesService challengesService;
+  
   @Autowired 
   LocalValidatorFactoryBean  validator;
   
+  @Autowired
+  Professeur prof;
 
   /*
        Test BEAN VALIDATION : COMPTE 
@@ -356,7 +364,7 @@ public class Spring4JUnit4Test {
 	  
 	  String  sourceCode = "#include <stdio.h> \n int main(void) \n{ \nint i = 5;\n  scanf(\"%d\", &i);\nprintf(\"Tets %d\", i);\nreturn 0;\n}";
 	  
-	  HashMap<String,String> res = IDE.runProgramme(sourceCode, "141\n", 11);
+	  HashMap<String,String> res = IDE.runProgramme(sourceCode, "141\n", 11,true);
 	   
 	  String ouput = res.get("output");
 	  	  
@@ -390,7 +398,7 @@ public class Spring4JUnit4Test {
 	  
   }
   
-  @Test
+ // @Test
   public void  testProgramme()
   {
 	List<Langage> languages =   languageService.allLanguages();
@@ -403,6 +411,30 @@ public class Spring4JUnit4Test {
 	}
 	
 	
+  }
+  
+  @Test
+  public void  testChallenge()
+  {
+	    Challenge challenge =  challengesService.findById(1);
+		
+		Langage langage = challenge.getLangage();     
+     
+      
+        String output = challenge.getOutput();
+      
+        String[] outputS = output.split("\\r?\\n");
+      
+        int i = outputS.length;
+    
+        while(i > 1)
+        {
+      	i--;
+      	System.out.println(outputS[i]);
+        }
+     
+	
+	   prof.print();
   }
   
   

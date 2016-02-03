@@ -9,7 +9,6 @@ public interface LangageService {
 	void save(Langage langage);
 	
 	Langage findById(int id);
-	Langage findByName(String nom);
 	
 	List<Langage> allLanguages();
 }

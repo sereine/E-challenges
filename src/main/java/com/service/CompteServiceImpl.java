@@ -26,12 +26,10 @@ public class CompteServiceImpl implements CompteService{
 	
 	public void save(Compte user){
 		
-		UserProfile userProfile = userProfileDaoImpl.findById(4);
+		UserProfile userProfile = userProfileDaoImpl.findById(13);
 		
 		if(userProfile == null)
 		{
-			
-			
 			userProfile = new UserProfile();
 			userProfile.setType("USER");
 			userProfileDaoImpl.persist(userProfile);
@@ -53,7 +51,7 @@ public class CompteServiceImpl implements CompteService{
 			dao.save(userAdmin);
 			
 			
-			userProfile = userProfileDaoImpl.findById(4);
+			userProfile = userProfileDaoImpl.findById(13);
             
 			
 		}

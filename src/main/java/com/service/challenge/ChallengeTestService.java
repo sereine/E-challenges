@@ -1,4 +1,4 @@
-package com.service;
+package com.service.challenge;
 
 import com.model.ChallengeTest;
 

@@ -12,12 +12,11 @@ import javax.xml.rpc.ServiceException;
 
 public class IDE {
 
-	public static HashMap<String,String> runProgramme(String sourceCode,String input, Integer language) {
+	public static HashMap<String,String> runProgramme(String sourceCode,String input, Integer language, boolean execute) {
 	  
 		Ideone_Service_v1ServiceLocator service = new Ideone_Service_v1ServiceLocator();
 		try {
 			Ideone_Service_v1Port p = service.getIdeone_Service_v1Port();
-			
 			try {
 			
 				String user = "9aea5b26f7b4ad5bf38d3c32b2206893";
@@ -25,10 +24,10 @@ public class IDE {
 				String pass = "ab660f11d880c37f56b8ca789c68d7df";
 				
 				
-				HashMap<String,String> dataResponse = (HashMap<String,String>)p.createSubmission(user, pass, sourceCode, language, input, true, false)[0];
+				HashMap<String,String> dataResponse = (HashMap<String,String>)p.createSubmission(user, pass, sourceCode, language, input, execute, true)[0];
 								
 				try {
-					Thread.sleep(1000);
+					Thread.sleep(10000);
 				} catch (InterruptedException e) {
 					e.printStackTrace();
 				} 
@@ -37,6 +36,7 @@ public class IDE {
 				
 				HashMap<String,String> statut = (HashMap<String,String>)p.getSubmissionStatus(user, pass, link)[0];
 								
+				
 				HashMap<String,String> detailsProgramme = (HashMap<String,String>) p.getSubmissionDetails(user, pass, link, true, true, true, true, true)[0];
 				
 			    

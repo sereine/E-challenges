@@ -58,6 +58,10 @@
 				</div>
 			</div>
 		</div>
+		
+		
+		
+		
 
 		<div class="row">
 					<div class="form-group col-md-12">
@@ -106,6 +110,31 @@
 				</div>
 			
 			
+			 
+			 <div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-3 control-lable" for="input">INPUT </label>
+				<div class="col-md-7">
+					<form:textarea type="textarea" path="input" id="input" class="form-control"/>
+					<div class="has-error">
+						<form:errors path="input" class="help-inline"/>
+					</div> 
+				</div>
+			</div>
+		</div>
+		
+		  
+		  <div class="row">
+			<div class="form-group col-md-12">
+				<label class="col-md-3 control-lable" for="input">OUTPUT </label>
+				<div class="col-md-7">
+					<form:textarea type="textarea" path="output" id="output" class="form-control"/>
+					<div class="has-error">
+						<form:errors path="output" class="help-inline"/>
+					</div> 
+				</div>
+			</div>
+		</div>
 			 
 		
 		
