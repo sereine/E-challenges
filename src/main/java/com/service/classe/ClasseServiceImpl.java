@@ -9,7 +9,6 @@ import com.dao.classe.ClasseDao;
 import com.model.Challenger;
 import com.model.Classe;
 import com.model.Compte;
-import com.service.ChallengeService;
 
 
 @Service("classeService")

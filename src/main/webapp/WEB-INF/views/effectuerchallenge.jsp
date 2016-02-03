@@ -19,10 +19,11 @@
 
 
 <script>
-    
-    var action_compile = "/project/responseCompilerTest?${_csrf.parameterName}=${_csrf.token}";
-    var id_challenge = ${id_challenge}; 
-    
+
+var action_compile = "/project/responseCompilerTest?${_csrf.parameterName}=${_csrf.token}";
+var id_challenge = ${id_challenge}; 
+var envoyer_solution = "/project/envoyerSolution?${_csrf.parameterName}=${_csrf.token}";
+
 </script>
 
 <body>

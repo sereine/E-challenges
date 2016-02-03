@@ -33,12 +33,18 @@ public class Solution {
 	private String code;
 	
 	@Column(name="TAILLE_FICHIER", nullable=false)
-	private Float tailleFichier;
+	private Integer tailleFichier;
 	
 	@Column(name="DATE", nullable=false)
-	private  Date data;
-
+	private  Date date;
 	
+    @Column(name="TEMPSEXECUTION", nullable=false)
+    Float tempsExecution;
+	
+    @Column(name="SOLUTIONCORRECTE", nullable=false)
+   	Boolean solutionCorrecte;
+    
+    
 	@NotNull
 	@ManyToOne
 	@JoinColumn(name = "challenge_id")
@@ -49,6 +55,8 @@ public class Solution {
 	@ManyToOne
 	@JoinColumn(name = "challenger_id")
 	Challenger challenger;
+	
+	
 	
 	
 	
@@ -83,20 +91,22 @@ public class Solution {
 		this.code = code;
 	}
 
-	public Float getTailleFichier() {
+	public Integer getTailleFichier() {
 		return tailleFichier;
 	}
 
-	public void setTailleFichier(Float tailleFichier) {
+	public void setTailleFichier(Integer tailleFichier) {
 		this.tailleFichier = tailleFichier;
 	}
+    
+	
 
-	public Date getData() {
-		return data;
+	public Date getDate() {
+		return date;
 	}
 
-	public void setData(Date data) {
-		this.data = data;
+	public void setDate(Date date) {
+		this.date = date;
 	}
 
 	public Challenge getChallenge() {
@@ -114,6 +124,24 @@ public class Solution {
 	public void setChallenger(Challenger challenger) {
 		this.challenger = challenger;
 	}
+
+	public Float getTempsExecution() {
+		return tempsExecution;
+	}
+
+	public void setTempsExecution(Float tempsExecution) {
+		this.tempsExecution = tempsExecution;
+	}
+
+	public Boolean getSolutionCorrecte() {
+		return solutionCorrecte;
+	}
+
+	public void setSolutionCorrecte(Boolean solutionCorrecte) {
+		this.solutionCorrecte = solutionCorrecte;
+	}
+
+	
 	
 	
 	

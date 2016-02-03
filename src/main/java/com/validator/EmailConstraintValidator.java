@@ -5,7 +5,7 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.service.ChallengeService;
+import com.service.ChallengerService;
 import com.service.ChallengerServiceImpl;
 import com.service.CompteServiceImpl;
 import com.service.entreprise.EntrepriseService;
@@ -13,7 +13,7 @@ import com.service.entreprise.EntrepriseService;
 public class EmailConstraintValidator implements ConstraintValidator<EmailUnique, String> {
    
 	@Autowired
-	private ChallengeService challengerService;
+	private ChallengerService challengerService;
 	
 	@Autowired
 	private EntrepriseService entrepriseService;

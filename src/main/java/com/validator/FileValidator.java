@@ -17,7 +17,7 @@ import org.xml.sax.SAXException;
 import com.model.Classe;
 import com.model.Etablissement;
 import com.model.FileBucket;
-import com.service.ChallengeService;
+import com.service.ChallengerService;
 import com.service.etab.EtabService;
 import com.service.etab.EtabServiceImpl;
 import com.util.ReadDataStudentsXML;
@@ -29,7 +29,7 @@ public class FileValidator implements Validator {
 	private static String UPLOAD_LOCATION="C:\\Users\\PC\\Desktop\\Projet JEE\\FilesUpload\\";
 
 	@Autowired
-	ChallengeService challengerService;
+	ChallengerService challengerService;
 	
 	@Autowired
 	EtabService etabService;

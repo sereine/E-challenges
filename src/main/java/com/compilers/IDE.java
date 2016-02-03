@@ -12,10 +12,11 @@ import javax.xml.rpc.ServiceException;
 
 public class IDE {
 
-	public static HashMap<String,String> runProgramme(String sourceCode,String input, Integer language, boolean execute) {
+	public static HashMap<String,Object> runProgramme(String sourceCode,String input, Integer language, boolean execute) {
 	  
-		Ideone_Service_v1ServiceLocator service = new Ideone_Service_v1ServiceLocator();
 		try {
+			Ideone_Service_v1ServiceLocator service = new Ideone_Service_v1ServiceLocator();
+
 			Ideone_Service_v1Port p = service.getIdeone_Service_v1Port();
 			try {
 			
@@ -23,30 +24,42 @@ public class IDE {
 				
 				String pass = "ab660f11d880c37f56b8ca789c68d7df";
 				
-				
-				HashMap<String,String> dataResponse = (HashMap<String,String>)p.createSubmission(user, pass, sourceCode, language, input, execute, true)[0];
-								
+				HashMap<String,Object> dataResponse;
+				HashMap<String,Object> detailsProgramme =  new HashMap<String,Object>();
+
+				try
+				{
+				 dataResponse = (HashMap<String,Object>)p.createSubmission(user, pass, sourceCode, language, input, execute, true)[0];
+				}
+				catch(Exception e)
+				{
+					return null;
+				}
 				try {
-					Thread.sleep(10000);
+					Thread.sleep(1000);
 				} catch (InterruptedException e) {
-					e.printStackTrace();
+					//e.printStackTrace();
+					System.out.println("error connexion");
+					return null;
 				} 
 				
-				String link = dataResponse.get("link");
+				String link = (String)dataResponse.get("link");
 				
 				HashMap<String,String> statut = (HashMap<String,String>)p.getSubmissionStatus(user, pass, link)[0];
 								
 				
-				HashMap<String,String> detailsProgramme = (HashMap<String,String>) p.getSubmissionDetails(user, pass, link, true, true, true, true, true)[0];
-				
+				detailsProgramme = (HashMap<String,Object>) p.getSubmissionDetails(user, pass, link, true, true, true, true, true)[0];
+				detailsProgramme.put("connexion", "succes");
 			    
 			    return detailsProgramme;
 				
 			} catch (RemoteException e) {
-				e.printStackTrace();
+				//e.printStackTrace();
+				System.out.println("error connexion");
 			}
 		} catch (ServiceException e) {
-			e.printStackTrace();
+			//e.printStackTrace();
+			System.out.println("error connexion");
 		}
 		
 	  	return null;

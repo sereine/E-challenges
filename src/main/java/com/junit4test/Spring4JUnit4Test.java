@@ -3,6 +3,7 @@ package com.junit4test;
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertTrue;
 
+import java.util.Calendar;
 import java.util.HashMap;
 import java.util.HashSet;
 import java.util.Iterator;
@@ -42,7 +43,8 @@ import com.model.Entreprise;
 import com.model.Etablissement;
 import com.model.Langage;
 import com.model.Professeur;
-import com.service.ChallengeService;
+import com.model.Solution;
+import com.service.ChallengerService;
 import com.service.CompteService;
 import com.service.CompteServiceImpl;
 import com.service.EtudiantService;
@@ -51,6 +53,7 @@ import com.service.challenge.ChallengesService;
 import com.service.entreprise.EntrepriseService;
 import com.service.etab.EtabService;
 import com.service.language.LangageService;
+import com.service.solution.SolutionService;
 import com.dao.professeur.*;
 
 
@@ -68,7 +71,7 @@ public class Spring4JUnit4Test {
   @Autowired
   private ChallengerDao challengerDao;
   @Autowired 
-  private ChallengeService challengeService;
+  private ChallengerService challengerService;
   
   
   @Autowired
@@ -100,7 +103,10 @@ public class Spring4JUnit4Test {
   
   @Autowired
   Professeur prof;
-
+  
+  @Autowired
+  SolutionService solutionService;
+  
   /*
        Test BEAN VALIDATION : COMPTE 
   */
@@ -359,7 +365,7 @@ public class Spring4JUnit4Test {
   
     
   //@Test
-  public void runProgrammeTest()
+ /* public void runProgrammeTest()
   {
 	  
 	  String  sourceCode = "#include <stdio.h> \n int main(void) \n{ \nint i = 5;\n  scanf(\"%d\", &i);\nprintf(\"Tets %d\", i);\nreturn 0;\n}";
@@ -413,7 +419,7 @@ public class Spring4JUnit4Test {
 	
   }
   
-  @Test
+ // @Test
   public void  testChallenge()
   {
 	    Challenge challenge =  challengesService.findById(1);
@@ -437,7 +443,69 @@ public class Spring4JUnit4Test {
 	   prof.print();
   }
   
-  
-  
-  
+  @Test
+  public void testEffectuerChallenge()
+  {   
+	  
+	  Challenger challenger = challengerService.findById(65);
+	  Challenge challenge =  challengesService.findById(1);
+	  Langage langage = challenge.getLangage();
+	  
+	  HashMap<String,String> res = new HashMap<String,String>();
+      
+	  String  sourceCode = "#include <stdio.h> \n int main(void) \n{ \n printf(\"15\\n\"); \n printf(\"44\\n\"); \n  printf(\"55\\n\"); \n  printf(\"77\\n\"); \n   return 0;\n}";
+
+
+      res = IDE.runProgramme(sourceCode, challenge.getInput(), langage.getCleeLangage(),true);
+	  
+      Solution solution = new Solution();      
+	  
+      solution.setChallenge(challenge);
+      solution.setChallenger(challenger);
+      solution.setCode(sourceCode);
+	  java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+      solution.setDate(date);      
+      //res.get("memory")
+      solution.setTailleFichier(10);
+      //Integer.parseInt(res.get("time"))
+      solution.setTempsExecution(5);
+      solution.setSolutionCorrecte(true);
+      
+      String output = challenge.getOutput();
+      
+      String[] outputS = output.split("\\r?\\n");
+      String[] resS = res.get("output").split("\n");
+      
+      int nbrOuput = outputS.length;
+      
+      int nbrRes = resS.length;
+      
+      if( nbrOuput!=  nbrRes)
+    	  solution.setSolutionCorrecte(false);
+      
+      System.out.println(nbrOuput);
+      System.out.println(nbrRes);
+      int i = nbrOuput;
+      i--;
+      
+      while(i >=0 )
+      {
+    	
+      	System.out.println(outputS[i] + "  "+ resS[i]);
+      	if(outputS[i].compareTo(resS[i]) != 0)
+      	{
+      		 System.out.println("co");
+      		solution.setSolutionCorrecte(false);
+	        break;
+      	}
+      	i--; 
+      }
+     
+      
+      solutionService.save(solution); 
+      
+      System.out.println("aze");
+      
+  }
+  */
 }

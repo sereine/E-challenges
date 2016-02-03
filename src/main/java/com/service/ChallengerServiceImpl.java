@@ -21,7 +21,7 @@ import com.model.UserProfile;
 
 @Service("challengerService")
 @Transactional
-public class ChallengerServiceImpl implements ChallengeService { 
+public class ChallengerServiceImpl implements ChallengerService { 
 	
 	@Autowired
 	private ChallengerDao dao;

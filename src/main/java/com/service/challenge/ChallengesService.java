@@ -5,7 +5,7 @@ import com.model.Langage;
 
 public interface ChallengesService {
 	
-   public void save(Challenge challenge);
+    public void save(Challenge challenge);
 	
 	public Challenge findById(int id);
 

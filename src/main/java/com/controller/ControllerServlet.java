@@ -52,8 +52,9 @@ import com.model.FileBucket;
 import com.model.Langage;
 import com.model.Probleme;
 import com.model.Professeur;
+import com.model.Solution;
 import com.model.UserProfile;
-import com.service.ChallengeService;
+import com.service.ChallengerService;
 import com.service.CompteService;
 import com.service.DeveloppeurService;
 import com.service.EtudiantService;
@@ -67,6 +68,7 @@ import com.service.entreprise.EntrepriseService;
 import com.service.etab.EtabService;
 import com.service.etab.EtabServiceImpl;
 import com.service.language.LangageService;
+import com.service.solution.SolutionService;
 import com.util.ReadDataStudentsXML;
 import com.validator.FileValidator;
 
@@ -96,7 +98,7 @@ public class ControllerServlet {
 	@Autowired
 	CompteService compteService;
 	@Autowired
-	ChallengeService challengerService;
+	ChallengerService challengerService;
 	@Autowired
 	DeveloppeurService developpeurService;
 	@Autowired
@@ -117,6 +119,9 @@ public class ControllerServlet {
 	
 	@Autowired
 	ChallengesService challengeService;
+	
+	@Autowired
+	  SolutionService solutionService;
 	
 	@RequestMapping(value = { "/", "/home" }, method = RequestMethod.GET)
 	public String homePage(ModelMap model) {
@@ -658,17 +663,156 @@ public class ControllerServlet {
 	}
 	
 	
+	 // Envoyer Solution	
+		@RequestMapping(value = "/envoyerSolution", method = RequestMethod.GET)
+		public @ResponseBody HashMap<String, String> envoyerSolution(
+				@RequestParam("code") String code,
+				@RequestParam("id_challenge") String challenge_id){
+	        
+		    HashMap<String,String> repErr = new  HashMap<String,String>();   
+            
+		    repErr.put("msgSolution", "La solution est envoye");
+		
+			if(code == null)
+			{
+				 repErr.put("msgSolution","entrer le code");
+				 return repErr;
+			}
+			if(challenge_id == null)
+			{
+				 repErr.put("msgSolution","challende id est incorrecte");
+				 return repErr;
+			}
+			String role =   getRole();
+		    if(role == null)
+		    {
+				 repErr.put("msgSolution","vous etes pas autoriser");
+				 return repErr;
+			}
+			if(role.compareTo("Developpeur") != 0 && role.compareTo("Professeur") != 0
+					&& role.compareTo("Etudiant") != 0 )
+			{
+				 repErr.put("msgSolution","vous etes pas autoriser");
+				 return repErr;
+			}
+			   
+			Challenger challenger = getChallenger();
+			
+			if(challenger == null)
+			{
+				 repErr.put("msgSolution","vous étes pas autoriser");
+				 return repErr;
+			}
+			
+			Integer id = null;
+			
+			try
+			{
+			    id = Integer.parseInt(challenge_id);
+			}
+			catch(Exception e)
+			{
+				
+					 repErr.put("msgSolution","challenge id est incorecte");
+					 return repErr;
+				
+			}
+			Challenge challenge =  challengeService.findById(id);
+			if(challenge == null )
+			{
+				 repErr.put("msgSolution","vous étes pas autoriser");
+				 return repErr;
+			}
+			
+			Langage langage = challenge.getLangage();
+
+			HashMap<String,Object> res = new HashMap<String,Object>();
+
+			
+	        //Traitement
+			
+			  res = IDE.runProgramme(code, challenge.getInput(), langage.getCleeLangage(),true);
+			  
+			  if(res == null)
+			  {
+					 repErr.put("msgSolution","connexion erreur");
+					 return repErr;
+			  }
+			  
+			  
+		      Solution solution = new Solution();      
+			  
+		      solution.setChallenge(challenge);
+		      solution.setChallenger(challenger);
+		      solution.setCode(code);
+			  java.sql.Date date = new java.sql.Date(Calendar.getInstance().getTime().getTime());
+		      solution.setDate(date);      
+		      System.out.println(res.get("memory") +" "+ res.get("time"));
+		      solution.setTailleFichier((Integer)res.get("memory"));
+		      solution.setTempsExecution((Float)res.get("time"));
+		      solution.setSolutionCorrecte(true);
+		      
+		      
+		      
+		      String output = challenge.getOutput();
+		      
+		      String[] outputS = output.split("\\r?\\n");
+		      String[] resS = ((String)(res.get("output"))).split("\n");
+		      
+		      int nbrOuput = outputS.length;
+		      
+		      int nbrRes = resS.length;
+		      
+		      if( nbrOuput!=  nbrRes)
+		    	  solution.setSolutionCorrecte(false);
+		      
+		      System.out.println(nbrOuput);
+		      System.out.println(nbrRes);
+		      int i = nbrOuput;
+		      i--;
+		      
+		      while(i >=0 )
+		      {
+		    	
+		      	System.out.println(outputS[i] + "  "+ resS[i]);
+		      	if(outputS[i].compareTo(resS[i]) != 0)
+		      	{
+		      		 System.out.println("co");
+		      		solution.setSolutionCorrecte(false);
+			        break;
+		      	}
+		      	i--; 
+		      }
+		     
+		      
+		      solutionService.save(solution); 
+		      
+		      System.out.println("aze");
+			
+			
+			
+			
+		      repErr.put("msgSolution","la solution est envoye");
+			  return repErr;
+		}
+		
+	
 	//  response Compiler  Test  ( effectuer challenge )
 	
 	
 	@RequestMapping(value = "/responseCompilerTest", method = RequestMethod.GET)
-	public @ResponseBody HashMap<String, String> responseCompilerTest(
+	public @ResponseBody HashMap<String, Object> responseCompilerTest(
 			@RequestParam("code") String code,
 			@RequestParam("id_challenge") String challenge_id){
             
-
+		    HashMap<String,Object> repErr = new  HashMap<String,Object>();   
+		
 			if(challenge_id == null)
-				return null;
+			{	
+				repErr.put("msgErreur", "challenge id incorrecte");
+				return repErr;
+				
+			}
 			
 			 Integer id = null;
 			
@@ -678,27 +822,42 @@ public class ControllerServlet {
 			}
 			catch(Exception e)
 			{
-				return null;
+				repErr.put("msgErreur", "challenge id incorrecte");
+				return repErr;
 			}
 			
 			Challenge challenge =  challengeService.findById(id);
 			
+			if(challenge == null)
+			{
+				repErr.put("msgErreur", "challenge id incorrecte");
+				return repErr;
+			}
+			
 			Langage langage = challenge.getLangage();
 			
-			if(challenge == null)
-				return null;
+			
 			
 	        
 
-	        HashMap<String,String> res = new HashMap<String,String>();
+	        HashMap<String,Object> res = new HashMap<String,Object>();
 	       
 	       
 	        res = IDE.runProgramme(code, challenge.getInput(), langage.getCleeLangage(),true);
 	        
+	        
+	        if(res == null)
+	        {
+	        	repErr.put("msgErreur", "erreur de connexion");
+				return repErr;
+	        }
+	        
+	        
+	        
 	        String output = challenge.getOutput();
 	        
 	        String[] outputS = output.split("\\r?\\n");
-	        String[] resS = res.get("output").split("\n");
+	        String[] resS = ((String)res.get("output")).split("\n");
 	        
 	        int nbrOuput = outputS.length;
 	        
@@ -714,9 +873,11 @@ public class ControllerServlet {
 	        
 	        int i = nbrOuput;
 	        
-	        while(i > 1)
+	        i = i  - 1;
+	        
+	        while(i >= 0)
 	        {
-	        	i--;
+	        	
 	        	if(outputS[i].compareTo(resS[i]) != 0)
 	        	{
 	        		res.put("res", "false");
@@ -724,6 +885,7 @@ public class ControllerServlet {
 		        	res.remove("output");
 		        	return res;
 	        	}
+	        	i--;
 	        }
 	       
 	        res.put("res", "true");
@@ -770,18 +932,25 @@ public class ControllerServlet {
 		        	return "Non valide langage.";
 		        
 
-		        HashMap<String,String> res = IDE.runProgramme(code, input, langage.getCleeLangage(),true);
+		        HashMap<String,Object> res = IDE.runProgramme(code, input, langage.getCleeLangage(),true);
 		        
 		         System.out.println(res);
 		        
-		        if( res.get("cmpinfo").isEmpty() == false )
-		           return res.get("cmpinfo");
+		         
+		         
+		           if(res == null)
+		        	 return "connexion error";
+			  
+			        	
+		         
+		        if( ((String)res.get("cmpinfo")).isEmpty() == false )
+		           return (String) res.get("cmpinfo");
 		        	
 		       
 		        
 		       
 		  
-			return res.get("output");
+			return (String)res.get("output");
 		}
 	
 	

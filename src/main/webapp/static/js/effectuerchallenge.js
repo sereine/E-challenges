@@ -57,8 +57,19 @@ $(document).ready(function() {
 						var cmpinfo =  response['cmpinfo'];
 						var date = response['date'];
 						var memory = response['memory'];
+						var msgErreur = response['msgErreur'];
 						
-						if( cmpinfo != "" )
+						
+						if(msgErreur != null)
+						{	
+						if(msgErreur != "" )
+						{
+							$("#success").css("display","none");
+							$("#error").css("display","block");
+							$("#msgerror").html("<p>connexion erreur.</p>");
+						}
+						}
+						else if( cmpinfo != "" )
 						{
 							$("#success").css("display","none");
 							$("#error").css("display","block");
@@ -98,37 +109,37 @@ $(document).ready(function() {
 	
 	
 	
-	$('#run').click(
+	$('.envoyer').click(
 			function(event) {
 				
-				
 				var code = $('#code').val();
-				var input = $('#input').val();		
-				var id = $('#languages').val();	
 				
 				var data = 'code='
-						+ encodeURIComponent(code)
-						+ '&input='
-						+ encodeURIComponent(input)
-						+ '&languages='
-						+ encodeURIComponent(id);
-				        
+					+ encodeURIComponent(code)
+					+ '&id_challenge='
+					+ encodeURIComponent(id_challenge);
+				
+				
+				
 				$.ajax({
-					url : $("#compiler").attr("action"),
+					url : envoyer_solution,
 					data : data,
 					type : "GET",
 	 
 					success : function(response) {
-						$('#output').val(response);
 						
+						var msgErreur = response['msgSolution'];
 						
+						alert(msgErreur);
 					},
 					error : function(xhr, status, error) {
+						
 						alert(xhr.responseText);
 					}
 				});
+				
+				
 			});
-	
 	
 	
 });

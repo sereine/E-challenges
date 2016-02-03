@@ -5,7 +5,6 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.service.ChallengeService;
 
 public class EmailProConstraintValidator   implements ConstraintValidator<EmailPro, String> {
     

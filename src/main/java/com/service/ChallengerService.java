@@ -3,7 +3,7 @@ package com.service;
 import com.model.Challenger;
 import com.model.Compte;
 
-public interface ChallengeService {
+public interface ChallengerService {
 	
    public void save(Challenger challenger);
 	

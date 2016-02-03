@@ -5,7 +5,6 @@ import javax.validation.ConstraintValidatorContext;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
-import com.service.ChallengeService;
 import com.service.CompteService;
 
 public class UserNameContrainstValidator implements ConstraintValidator<UserNameUnique, String> {
